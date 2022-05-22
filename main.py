@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+#畫圖
 import matplotlib.pyplot as plt
 
 #mqtt
@@ -14,6 +15,9 @@ import numpy as np
 import dataset
 import pymysql
 import models
+import threading
+
+import json
 
 
 def draw() :
@@ -32,25 +36,44 @@ def draw() :
     plt.grid(True)
     plt.plot(x, y, 'b-o') # blue solid line with filled circle marker
     plt.savefig('static/img/fig2.png')
-    
+
+
+test_str :str
+ 
 #mqtt
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc) )
     client.subscribe("MQTT")
 
 def on_message(client, userdata, msg):
+    global test_str
+    
     print(msg.topic+" "+str(msg.payload))
+    mqtt_str = msg.payload.decode('utf-8', errors='ignore') #bytes to str (中文目前無法處理)
+    #print(mqtt_str)
+    mqtt_j = json.loads(mqtt_str)  #str to JSON
+    print(mqtt_j)
+    
 
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
-client.connect("localhost", 1883)
-client.loop_forever()
+def MQTT_server():
+    client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.connect("localhost", 1883)
+    client.loop_forever()
 
+# 建立一個子執行緒
+t = threading.Thread(target = MQTT_server)
 
+# 執行該子執行緒
+t.start()
+
+def json_into_database(json):
+    type = json['type']
+    data = json["data"]
+    time_stemp =  json["time"]
 
 templates = Jinja2Templates(directory='templates')
-
 
 app = FastAPI()
 
@@ -88,5 +111,5 @@ async def record_face_data(request: Request,data : models.face_data):
 
 @app.get('/show')
 async def index(request: Request):
-    global gdata
-    return templates.TemplateResponse(name='show.html', context={'request': request,'data':gdata})
+    global gdata,test_str
+    return templates.TemplateResponse(name='show.html', context={'request': request,'data':test_str})

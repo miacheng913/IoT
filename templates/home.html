@@ -3,10 +3,19 @@
 
 <head>
   <meta charset="UTF-8">
+  <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+  <META HTTP-EQUIV="EXPIRES" CONTENT="0">
+  <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
   <title >監控網站</title>
 
-  <script type="text/javascript" src="/static/index.js"></script>
-
+  <script type="text/javascript">
+    function myrefresh(){
+      document.getElementById("pic2").src="/static/img/fig2.png";
+    }
+    //指定1s刷新一次
+    setTimeout('myrefresh()',2000);
+  </script> 
+    
 
 </head>
 
@@ -15,7 +24,7 @@
     <img src="/static/img/fig1.png" with="600" heigh="400" alt="一張圖片">
 
     <h2>數據示意圖 2</h2>
-    <img src="/static/img/fig2.png" with="600" heigh="400" alt="一張圖片">
+    <img id="pic2" src="/static/img/fig2.png" with="600" heigh="400" alt="一張圖片">
 
     <input type = 'button'  onclick="jump()" value="回首頁"></input>
 </body>

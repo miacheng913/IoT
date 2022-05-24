@@ -4,3 +4,5 @@ function jump() {
     window.location.replace("/");
       
   };
+
+

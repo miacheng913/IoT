@@ -14,23 +14,34 @@ import numpy as np
 # db
 import dataset
 import pymysql
+pymysql.install_as_MySQLdb()
+
 import models
 import threading
 
 import json
+import time
+
+#db
 
 
-def draw() :
-    x = np.linspace(0.0, 2*np.pi)  # 50x1 array between 0 and 2*pi
-    y = np.cos(x)                  # cos(x)
 
-    x3 = np.linspace(0, 2*np.pi,10) # 10x1 array
-    y3 = np.sinc(x3)
+def draw(table_name) :
+    db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
+    cmd = "select * from " + table_name + " ORDER BY time_stamp DESC limit 10"
+    data_list = []
+    time_list = []
+    for row in db.query(cmd) :
+        data_list.append(row['data'])
+        time_list.append(row['time_stamp'])
+    #print(time_list)
+    x = np.array(time_list)  # 50x1 array between 0 and 2*pi
+    y = np.array(data_list)                # cos(x)
 
-    plt.clf()
-    plt.grid(True)
-    plt.plot(x3, y3, 'r:')     # red dotted line (no marker)
-    plt.savefig('static/img/fig1.png')
+    # plt.clf()
+    # plt.grid(True)
+    # plt.plot(x3, y3, 'r:')     # red dotted line (no marker)
+    # plt.savefig('static/img/fig1.png')
     
     plt.clf()
     plt.grid(True)
@@ -38,21 +49,32 @@ def draw() :
     plt.savefig('static/img/fig2.png')
 
 
+        
+
+
+
+
 test_str :str
  
 #mqtt
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc) )
-    client.subscribe("MQTT")
+    client.subscribe("/python/mqtt/hst")
 
 def on_message(client, userdata, msg):
     global test_str
     
     print(msg.topic+" "+str(msg.payload))
     mqtt_str = msg.payload.decode('utf-8', errors='ignore') #bytes to str (中文目前無法處理)
+    table= mqtt_str.split(':')
+    db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
+    user_table = db[table[0]]
+
+    insert_dic = {'data':table[1],'time_stamp':time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
+    user_table.insert(insert_dic)
     #print(mqtt_str)
-    mqtt_j = json.loads(mqtt_str)  #str to JSON
-    print(mqtt_j)
+    #mqtt_j = json.loads(mqtt_str)  #str to JSON
+    #print(mqtt_j)
     
 
 def MQTT_server():
@@ -68,10 +90,9 @@ t = threading.Thread(target = MQTT_server)
 # 執行該子執行緒
 t.start()
 
-def json_into_database(json):
-    type = json['type']
-    data = json["data"]
-    time_stemp =  json["time"]
+
+
+
 
 templates = Jinja2Templates(directory='templates')
 
@@ -100,7 +121,7 @@ async def index(request: Request):
 @app.get('/home', response_class=HTMLResponse)
 async def index(request: Request):
     print(request)
-    draw()
+    #draw('co2')
     return templates.TemplateResponse(name='home.html', context={'request': request})
 
 @app.post('/record_face_data')

@@ -1,0 +1,43 @@
+@import url(//fonts.googleapis.com/earlyaccess/notosanstc.css);
+body{
+  font-family: 'Noto Sans TC',sans-serif !important;
+  background-image:url( '/static/img/backdround.jpeg' );
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+}
+
+#index{
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;    
+    /* 垂直置中 */
+    align-items: center;  
+    flex-direction: column;
+}
+#title {
+    position:absolute;
+    top:80px;
+    display: flex;
+    /* 水平置中 */
+    justify-content: center;    
+    /* 垂直置中 */
+    align-items: center;
+    flex-direction: column;
+    font-size:1.5cm;
+}
+.button {
+    
+    background:    #999999;
+    border-radius: 1000px;
+    padding:       20px 45px;
+    color:         #ffffff;
+    display:       inline-block;
+    font:          normal bold 26px/1 "Open Sans", sans-serif;
+    text-align:    center;
+}
+#buttons{
+    position:absolute;
+    top:550px;
+}

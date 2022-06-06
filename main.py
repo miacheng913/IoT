@@ -13,6 +13,7 @@ import paho.mqtt.client as mqtt
 import numpy as np
 # db
 import dataset
+from datetime import datetime
 import pymysql
 pymysql.install_as_MySQLdb()
 
@@ -40,9 +41,11 @@ def on_message(client, userdata, msg):
     table= msg.topic.split('/')
     db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
     user_table = db[table[4]]
-
-    insert_dic = {'data':msg_str,'time_stamp':time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
-    user_table.insert(insert_dic)
+    if user_table != "cmd" :
+        insert_dic = {'data':msg_str,'time_stamp':time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())}
+        user_table.insert(insert_dic)
+    else :
+        print("I publish")
     #print(table)
     
     
@@ -50,7 +53,7 @@ def on_message(client, userdata, msg):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect("localhost", 1883)
+client.connect("broker.emqx.io", 1883)
 
 def MQTT_server():
     client.loop_forever()
@@ -60,6 +63,9 @@ t = threading.Thread(target = MQTT_server)
 
 # 執行該子執行緒
 t.start()
+
+def MQTT_send(topic,data):
+    client.publish(topic, data)
 
 templates = Jinja2Templates(directory='templates')
 
@@ -91,10 +97,9 @@ async def index(request: Request):
     #draw('co2')
     return templates.TemplateResponse(name='home.html', context={'request': request})
 
-@app.get('/show')
+@app.get('/control')
 async def index(request: Request):
-    global gdata,test_str
-    return templates.TemplateResponse(name='show.html', context={'request': request,'data':test_str})
+    return templates.TemplateResponse(name='control.html', context={'request': request})
 
 @app.get('/mqtt')
 async def index(request: Request):
@@ -116,5 +121,36 @@ async def index(request: Request):
     cmd = "select * from dht22 ORDER BY time_stamp DESC limit 1"
     for tmp in db.query(cmd):
         result['temperature'] = tmp['data']
-    print(result)
+    #print(result)
     return json.dumps(result,ensure_ascii=False)
+
+@app.get('/historydata')
+async def index(request: Request):
+    db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
+    result = {'co2': [],'face':[],'light':[],'temperature':[],'time_stamp':[]}
+    cmd = "select * from co2 ORDER BY time_stamp DESC limit 20"
+    for tmp in db.query(cmd):
+        result['co2'].append(tmp['data'])
+        result['time_stamp'].append(datetime.strftime(tmp['time_stamp'], "%Y-%m-%d %H:%M:%S"))
+    cmd = "select * from face ORDER BY time_stamp DESC limit 20"
+    for tmp in db.query(cmd):
+        result['face'].append(tmp['data'])
+    cmd = "select * from light ORDER BY time_stamp DESC limit 20"
+    for tmp in db.query(cmd):
+        result['light'].append(tmp['data'])
+    cmd = "select * from dht22 ORDER BY time_stamp DESC limit 20"
+    for tmp in db.query(cmd):
+        result['temperature'].append(tmp['data'])
+    #print(result)
+    result['co2'] = list(reversed( result['co2']))
+    result['time_stamp'] = list(reversed( result['time_stamp']))
+    result['face'] = list(reversed( result['face']))
+    result['light'] = list(reversed( result['light']))
+    result['temperature'] = list(reversed( result['temperature']))
+    return json.dumps(result,ensure_ascii=False)
+
+@app.post("/cmd/{cmd}")
+async def read_item(cmd ):
+    print(cmd)
+    tmp= cmd.split(':')
+    MQTT_send("/python/mqtt/hst/cmd/"+tmp[0],tmp[1])

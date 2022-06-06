@@ -1,7 +1,21 @@
 function jump() {
     
-    alert('即將跳轉頁面');
+    //alert('即將跳轉頁面');
     window.location.replace("/");
+      
+  };
+
+  function jump_history() {
+    
+    //alert('即將跳轉頁面');
+    window.location.replace("/history");
+      
+  };
+
+  function jump_ins() {
+    
+    //alert('即將跳轉頁面');
+    window.location.replace("/home");
       
   };
 

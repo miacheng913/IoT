@@ -101,6 +101,10 @@ async def index(request: Request):
 async def index(request: Request):
     return templates.TemplateResponse(name='control.html', context={'request': request})
 
+@app.get('/history')
+async def index(request: Request):
+    return templates.TemplateResponse(name='history.html', context={'request': request})
+
 @app.get('/mqtt')
 async def index(request: Request):
     client.publish("/python/mqtt/hst/cmd/light", "test")

@@ -7,24 +7,22 @@ function get_newest(){
         obj =  JSON.parse(obj);
         
         var table_select = document.getElementById('newdataTable');
-        inner = "<table>\
-        <tr>\
-            <td>co2</td>\
-            <td>" + obj.co2 + "</td>\
-        </tr>\
-        <tr>\
-            <td>face</td>\
-            <td>" + obj.face + "</td>\
-        </tr>\
-        <tr>\
-            <td>light</td>\
-            <td>" + obj.light + "</td>\
-        </tr>\
-        <tr>\
-            <td>temperature</td>\
-            <td>" + obj.temperature + " °C" + "</td>\
-        </tr>\
-        </table>";
+        inner = "<div class='round'>\
+            <p>co2</p>\
+            <br><p>" + obj.co2 + "</p>\
+        </div>\
+        <div class='round'>\
+            <p>face</p>\
+            <br><p>" + obj.face + "</p>\
+        </div>\
+        <div class='round'>\
+            <p>light</p>\
+            <br><p>" + obj.light + "</p>\
+        </div>\
+        <div class='round'>\
+            <p>temperature</p>\
+            <br><p>" + obj.temperature + " °C" + "</p>\
+        </div>";
         table_select.innerHTML = inner;
     };
     xhr.send();

@@ -8,7 +8,7 @@ body{
             background-size: cover;
 }
 
-#index{
+#index {
     display: flex;
     /* 水平置中 */
     justify-content: center;    
@@ -16,6 +16,7 @@ body{
     align-items: center;  
     flex-direction: column;
 }
+
 #title {
     position:absolute;
     top:80px;
@@ -41,3 +42,9 @@ body{
     position:absolute;
     top:550px;
 }
+
+.round {
+    border: 2px solid rgb(60, 142, 189);
+    border-radius: 12px;
+    padding: 5px;
+  }

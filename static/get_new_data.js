@@ -27,3 +27,4 @@ function get_newest(){
     };
     xhr.send();
 }
+

@@ -28,6 +28,11 @@ import time
 # db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
 # cmd = "select * from " + table_name + " ORDER BY time_stamp DESC limit 10"
  
+state = "alto"
+
+state_table = {"dht22":["23", "fan", "0" ,"1" ,"fan"],"light":["650" ,"light" ,"101" ,"100", "light1"],"face":["1", "monitor", "0" ,"1", "monitor"],"co2":["500" ,"light" ,"111", "110" ,"light2"]}
+state_now_table = {"fan":"0","light1":"0","monitor":"0","light2":"0"}
+
 #mqtt
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc) )
@@ -47,7 +52,16 @@ def on_message(client, userdata, msg):
     else :
         print("I publish")
     #print(table)
-    
+    global state,state_table
+    if state == "alto":
+        if float(msg_str) < float(state_table[table[4]][0]):
+            MQTT_send("/python/mqtt/hst/cmd/"+state_table[table[4]][1],state_table[table[4]][2])
+            state_now_table[state_table[table[4]][4]] = state_table[table[4]][2]
+            print(state_now_table)
+        else:
+            MQTT_send("/python/mqtt/hst/cmd/"+state_table[table[4]][1],state_table[table[4]][3])
+            state_now_table[state_table[table[4]][4]] = state_table[table[4]][3]
+            print(state_now_table)
     
 
 client = mqtt.Client()
@@ -85,6 +99,39 @@ gdata : models.face_data
 app.mount(path='/templates', app=StaticFiles(directory='templates'), name='templates')
 app.mount(path='/static', app=StaticFiles(directory='static'), name='static ')
 
+def newest():
+    global state,state_table,state_now_table
+    db = dataset.connect('mysql://IOT:Sea13Sky17@127.0.0.1:3306/iot?charset=utf8mb4')
+    
+    cmd = "select * from co2 ORDER BY time_stamp DESC limit 1"
+    for tmp in db.query(cmd):
+        if float(tmp['data']) < float(state_table['co2'][0]):
+            state_now_table['light2'] = state_table['co2'][2]
+        else:
+            state_now_table['light2'] = state_table['co2'][3]
+    cmd = "select * from face ORDER BY time_stamp DESC limit 1"
+    for tmp in db.query(cmd):
+        if float(tmp['data']) < float(state_table['face'][0]):
+            state_now_table['monitor'] = state_table['face'][2]
+        else:
+            state_now_table['monitor'] = state_table['face'][3]
+    cmd = "select * from light ORDER BY time_stamp DESC limit 1"
+    for tmp in db.query(cmd):
+        if float(tmp['data']) < float(state_table['light'][0]):
+            state_now_table['light1'] = state_table['light'][2]
+        else:
+            state_now_table['light1'] = state_table['light'][3]
+    cmd = "select * from dht22 ORDER BY time_stamp DESC limit 1"
+    for tmp in db.query(cmd):
+        if float(tmp['data']) < float(state_table['dht22'][0]):
+            state_now_table['fan'] = state_table['dht22'][2]
+        else:
+            state_now_table['fan'] = state_table['dht22'][3]
+    
+    print(state_now_table)
+
+
+
 @app.get('/', response_class=HTMLResponse)
 async def index(request: Request):
     
@@ -99,6 +146,7 @@ async def index(request: Request):
 
 @app.get('/control')
 async def index(request: Request):
+    newest()
     return templates.TemplateResponse(name='control.html', context={'request': request})
 
 @app.get('/history')
@@ -108,6 +156,12 @@ async def index(request: Request):
 @app.get('/mqtt')
 async def index(request: Request):
     client.publish("/python/mqtt/hst/cmd/light", "test")
+
+@app.get('/state')
+async def index(request: Request):
+    global state_now_table
+    #print(result)
+    return json.dumps(state_now_table,ensure_ascii=False)
 
 @app.get('/newestdata')
 async def index(request: Request):
@@ -158,3 +212,9 @@ async def read_item(cmd ):
     print(cmd)
     tmp= cmd.split(':')
     MQTT_send("/python/mqtt/hst/cmd/"+tmp[0],tmp[1])
+
+@app.post("/state/{state_now}")
+async def read_item(state_now):
+    global state
+    state = str(state_now)
+    print(state)

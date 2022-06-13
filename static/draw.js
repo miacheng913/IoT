@@ -43,8 +43,8 @@ function get_history(){
                 {
                     label: '溫度', // tootip 出現的名稱
                     //lineTension: 0, // 曲線的彎度，設0 表示直線
-                    backgroundColor: "#ea464d",
-                    borderColor: "#ea464d",
+                    backgroundColor: "#00AEAE",
+                    borderColor: "#00AEAE",
                     //borderWidth: 5,
                     data: obj2.temperature, // 資料
                     fill: false, // 是否填滿色彩
@@ -57,8 +57,8 @@ function get_history(){
                 {
                     label: 'light', // tootip 出現的名稱
                     //lineTension: 1, // 曲線的彎度，設0 表示直線
-                    backgroundColor: "#ea464d",
-                    borderColor: "#ea464d",
+                    backgroundColor: "#AE57A4",
+                    borderColor: "#AE57A4",
                     //borderWidth: 5,
                     data: obj2.light, // 資料
                     fill: false, // 是否填滿色彩

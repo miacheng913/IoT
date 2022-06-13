@@ -9,9 +9,11 @@ body{
 }
 
 #index {
+    width: auto;
+    height: auto;
     display: flex;
     /* 水平置中 */
-    justify-content: center;    
+    justify-content:center;
     /* 垂直置中 */
     align-items: center;  
     flex-direction: column;
@@ -38,13 +40,62 @@ body{
     font:          normal bold 26px/1 "Open Sans", sans-serif;
     text-align:    center;
 }
+
+.button2 {
+    
+    background:    #6fa8dc;
+    border-radius: 1000px;
+    padding:       20px 45px;
+    color:         #ffffff;
+    display:       inline-block;
+    font:          normal bold 26px/1 "Open Sans", sans-serif;
+    text-align:    center;
+}
 #buttons{
     position:absolute;
     top:550px;
 }
 
+#buttons2{
+    position:absolute;
+    top:950px;
+}
+
+#light_button{
+    position:absolute;
+    top:150px;
+}
+
+#fan_button{
+    position:absolute;
+    top:350px;
+}
+
+#row_button{
+    position:absolute;
+    top:550px;
+}
+
+#mon_button{
+    position:absolute;
+    top:750px;
+}
+
+
+#newdataTable{
+    width: 25cm;
+    height: auto;
+    position:absolute;
+    top:250px;
+    display: flex;
+    justify-content: space-between;  
+}
+
 .round {
-    border: 2px solid rgb(60, 142, 189);
+    width: 150px;
+    height: 150px;
+    border: 5px solid rgb(35, 92, 131);
     border-radius: 12px;
     padding: 5px;
+    text-align:    center;
   }

@@ -4,20 +4,40 @@
 <head>
   <meta charset="UTF-8">
   <title >監控網站</title>
-
+  <link rel="stylesheet" href="/static/index.css">
   <script type="text/javascript" src="/static/index.js"></script>
-
+  <script type="text/javascript">
+    window.onload= function(){
+      get_newest()
+      
+    }
+  </script>
 </head>
 
 <body>
+    <div id="index">
+      <div id="light_button">
+        <input type = 'button' id='light_button1' class="button2" onclick="control('light:100')" value="電燈關"></input>
+        <input type = 'button' id='light_button2' class="button2" onclick="control('light:101')" value="電燈開"></input>
+      </div>
+      <div id="fan_button">
+        <input type = 'button' id='fan_button1' class="button2" onclick="control('fan:0')" value="風扇關"></input>
+        <input type = 'button' id='fan_button2' class="button2" onclick="control('fan:1')" value="風扇開"></input>
+      </div>
+      <div id="row_button">
+        <input type = 'button' id='row_button1' class="button2" onclick="control('light:111')" value="電磁閥關"></input>
+        <input type = 'button' id='row_button2' class="button2" onclick="control('light:110')" value="電磁閥開"></input>
+      </div>
+      <div id="mon_button">
+        <input type = 'button' id='mon_button1' class="button2" onclick="control('monitor:0')" value="電視關"></input>
+        <input type = 'button' id='mon_button2' class="button2" onclick="control('monitor:1')" value="電視開"></input>
+      </div>
+      <div style="position:absolute; top:950px;">
+        <input type = 'button' class="button" onclick="jump()" value="home"></input>
+      </div>
+      
+    </div>
     
-    <input type = 'button'  onclick="control('light:100')" value="電燈關"></input>
-    <input type = 'button'  onclick="control('light:101')" value="電燈開"></input>
-    <input type = 'button'  onclick="control('fan:0')" value="風扇關"></input>
-    <input type = 'button'  onclick="control('fan:1')" value="風扇開"></input>
-    <input type = 'button'  onclick="control('light:111')" value="電磁閥關"></input>
-    <input type = 'button'  onclick="control('light:110')" value="電磁閥關"></input>
-    <input type = 'button'  onclick="jump()" value="home"></input>
 
 </body>
 
